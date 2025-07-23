@@ -31,6 +31,7 @@
     "graphql": "15.3.0",
     "graphql-scalars": "^1.24.2",
     "pg": "^8.16.3",
+    "reflect-metadata": "0.1.13",
     "type-graphql": "1.0.0-rc.3"
   },
   "mikro-orm": {
