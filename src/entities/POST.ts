@@ -10,11 +10,11 @@ export class Post {
 
   @Field(() => String)
   @Property({ type: 'date' })
-  createdAt = new Date();
+  createdAt = new Date().toString();
 
   @Field(() => String)
   @Property({ type: 'date', onUpdate: () => new Date() })
-  updatedAt = new Date();
+  updatedAt = new Date().toString();
 
   @Field()
   @Property({ type: 'text' })
