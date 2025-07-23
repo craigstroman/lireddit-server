@@ -18,4 +18,5 @@ export default {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   debug: !__prod__,
+  allowGlobalContext: true,
 } as Parameters<typeof MikroORM.init>[0];
