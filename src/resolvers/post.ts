@@ -45,10 +45,25 @@ export class PostResolver {
 
     if (typeof title !== 'undefined') {
       post.title = title;
-      post.updatedAt = new Date();
+      post.updatedAt = new Date().toString();
       await em.persistAndFlush(post);
     }
 
     return post;
+  }
+
+  @Mutation(() => Boolean)
+  async deletePostById(
+    @Arg('id') id: number,
+    @Ctx() { em }: MyContext
+  ): Promise<boolean> {
+    try {
+      await em.nativeDelete(Post, { id });
+
+      return true;
+    } catch (error) {
+      console.log('error: ', error);
+      return false;
+    }
   }
 }
