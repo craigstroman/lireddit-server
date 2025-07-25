@@ -3,6 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import dotenv from 'dotenv';
 import { Post } from './entities/POST';
+import { User } from './entities/USER';
 import { __prod__ } from './constants';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -14,7 +15,7 @@ export default {
   },
   driver: PostgreSqlDriver,
   dbName: process.env.DB_NAME,
-  entities: [Post],
+  entities: [Post, User],
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   debug: !__prod__,
