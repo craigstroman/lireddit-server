@@ -24,8 +24,8 @@ export class PostResolver {
   ): Promise<Post> {
     const post = em.create(Post, {
       title,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toString(),
+      updatedAt: new Date().toString(),
     });
     await em.persistAndFlush(post);
     return post;
