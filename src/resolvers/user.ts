@@ -71,8 +71,22 @@ export class UserResolver {
       createdAt: new Date().toDateString(),
       updatedAt: new Date().toDateString(),
     });
-    await em.persistAndFlush(user);
-    return user;
+    try {
+      await em.persistAndFlush(user);
+    } catch (error) {
+      if (error.code === '23505') {
+        return {
+          errors: [
+            {
+              field: 'username',
+              message: 'username already taken',
+            },
+          ],
+        };
+      }
+    }
+
+    return { user };
   }
 
   @Mutation(() => UserResponse)
