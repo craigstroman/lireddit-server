@@ -24,8 +24,8 @@ export class PostResolver {
   ): Promise<Post> {
     const post = em.create(Post, {
       title,
-      createdAt: new Date().toString(),
-      updatedAt: new Date().toString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     await em.persistAndFlush(post);
     return post;
@@ -45,7 +45,7 @@ export class PostResolver {
 
     if (typeof title !== 'undefined') {
       post.title = title;
-      post.updatedAt = new Date().toString();
+      post.updatedAt = new Date();
       await em.persistAndFlush(post);
     }
 
