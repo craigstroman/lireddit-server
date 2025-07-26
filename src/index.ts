@@ -6,6 +6,7 @@ import express from 'express';
 import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
+import { UserResolver } from './resolvers/user';
 import microConfig from './mikro-orm-config';
 
 const main = async () => {
@@ -16,7 +17,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, PostResolver],
+      resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
     context: async () => ({ em: orm.em }),
