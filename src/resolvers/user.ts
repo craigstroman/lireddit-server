@@ -1,7 +1,6 @@
 import { MyContext } from 'src/types';
 import {
   Resolver,
-  Query,
   Mutation,
   Arg,
   InputType,
