@@ -83,6 +83,15 @@ export class UserResolver {
             },
           ],
         };
+      } else {
+        return {
+          errors: [
+            {
+              field: 'error',
+              message: error,
+            },
+          ],
+        };
       }
     }
 
