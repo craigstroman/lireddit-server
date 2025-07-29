@@ -132,6 +132,7 @@ export class UserResolver {
       };
     }
 
+    // Store user id session
     req.session.userId = user.id;
 
     return {
