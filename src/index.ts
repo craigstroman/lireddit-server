@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { createClient } from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -14,8 +14,13 @@ import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import microConfig from './mikro-orm-config';
 
+declare module 'express-session' {
+  interface SessionData {
+    userId: number;
+  }
+}
+
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
-console.log('process.env.SECRET: ', process.env.SECRET);
 
 const RedisStore = connectRedis(session);
 const redisClient = createClient();
@@ -30,7 +35,17 @@ const main = async () => {
   app.use(
     session({
       name: 'qid',
-      store: new RedisStore({ client: redisClient }),
+      store: new RedisStore({
+        client: redisClient,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: __prod__,
+      },
+      saveUninitialized: true,
       secret: secret,
       resave: false,
     })
@@ -41,12 +56,25 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: async () => ({ em: orm.em }),
+    context: async ({ req, res }) => ({
+      em: orm.em,
+      req,
+      res,
+    }),
   });
 
   await apolloServer.start();
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: {
+      credentials: true,
+      origin: [
+        'https://studio.apollographql.com',
+        'http://localhost:9000/graphql',
+      ],
+    },
+  });
 
   app.listen(9000, () => {
     console.log('Server started on localhost:9000');
