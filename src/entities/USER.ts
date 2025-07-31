@@ -17,6 +17,18 @@ export class User {
   updatedAt = new Date().toString();
 
   @Field()
+  @Property({ type: 'text' })
+  first_name!: string;
+
+  @Field()
+  @Property({ type: 'text' })
+  last_name!: string;
+
+  @Field()
+  @Property({ type: 'text' })
+  email!: string;
+
+  @Field()
   @Property({ type: 'text', unique: true })
   username!: string;
 
