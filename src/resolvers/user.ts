@@ -15,6 +15,12 @@ import { User } from '../entities/USER';
 @InputType()
 class UsernamePasswordInput {
   @Field()
+  first_name: string;
+  @Field()
+  last_name: string;
+  @Field()
+  email: string;
+  @Field()
   username: string;
   @Field()
   password: string;
@@ -67,6 +73,9 @@ export class UserResolver {
     }
     const hashedPassword = await argon2.hash(options.password);
     const user = em.create(User, {
+      first_name: options.first_name,
+      last_name: options.last_name,
+      email: options.email,
       username: options.username,
       password: hashedPassword,
       createdAt: new Date().toDateString(),
