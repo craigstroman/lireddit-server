@@ -3,11 +3,12 @@ import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { createClient } from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
@@ -33,6 +34,25 @@ const main = async () => {
   const app = express();
 
   app.use(
+    cors({
+      origin: ['http://localhost:9000/graphql'],
+      credentials: true,
+      methods: 'GET HEAD PUT PATCH POST DELETE FETCH',
+    })
+  );
+
+  app.use((req, res, next) => {
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin');
+    res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+    next();
+  });
+
+  app.use(
     session({
       name: 'qid',
       store: new RedisStore({
@@ -54,7 +74,7 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
-      validate: false,
+      validate: true,
     }),
     context: async ({ req, res }) => ({
       em: orm.em,
@@ -67,13 +87,7 @@ const main = async () => {
 
   apolloServer.applyMiddleware({
     app,
-    cors: {
-      credentials: true,
-      origin: [
-        'https://studio.apollographql.com',
-        'http://localhost:9000/graphql',
-      ],
-    },
+    cors: false,
   });
 
   app.listen(9000, () => {
