@@ -45,32 +45,44 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req, em }: MyContext) {
+    // You are not logged in
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
-  ) {
+    @Ctx() { req, em }: MyContext
+  ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
         errors: [
           {
             field: 'username',
-            message: 'Username must be at least 2 characters long.',
+            message: 'Username must be greater than 2 characters long.',
           },
         ],
       };
     }
 
-    if (options.password.length <= 3) {
+    if (options.password.length <= 2) {
       return {
         errors: [
           {
             field: 'password',
-            message: 'Password must be at least 3 characters long.',
+            message: 'Password length must be greater than 2 characters long.',
           },
         ],
       };
     }
+
     const hashedPassword = await argon2.hash(options.password);
     const user = em.create(User, {
       first_name: options.first_name,
@@ -81,6 +93,7 @@ export class UserResolver {
       createdAt: new Date().toDateString(),
       updatedAt: new Date().toDateString(),
     });
+
     try {
       await em.persistAndFlush(user);
     } catch (error) {
@@ -93,17 +106,10 @@ export class UserResolver {
             },
           ],
         };
-      } else {
-        return {
-          errors: [
-            {
-              field: 'error',
-              message: error,
-            },
-          ],
-        };
       }
     }
+
+    req.session.userId = user.id;
 
     return { user };
   }
@@ -147,16 +153,5 @@ export class UserResolver {
     return {
       user,
     };
-  }
-
-  @Query(() => User, { nullable: true })
-  async me(@Ctx() { req, em }: MyContext) {
-    // You are not logged in
-    if (!req.session.userId) {
-      return null;
-    }
-    const user = await em.findOne(User, { id: req.session.userId });
-
-    return user;
   }
 }
