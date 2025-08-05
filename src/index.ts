@@ -34,10 +34,9 @@ const main = async () => {
   const app = express();
 
   app.use(
-    '/graphql',
     cors({
       origin: ['http://localhost:9000'],
-      credentials: false,
+      credentials: true,
       methods: 'GET HEAD PUT PATCH POST DELETE FETCH',
     })
   );
