@@ -16,15 +16,15 @@ export class User {
   @Property({ type: 'date', onUpdate: () => new Date() })
   updatedAt = new Date().toString();
 
-  @Field()
+  @Field(() => String)
   @Property({ type: 'text' })
   first_name!: string;
 
-  @Field()
+  @Field(() => String)
   @Property({ type: 'text' })
   last_name!: string;
 
-  @Field()
+  @Field(() => String)
   @Property({ type: 'text' })
   email!: string;
 
