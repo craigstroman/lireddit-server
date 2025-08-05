@@ -34,23 +34,13 @@ const main = async () => {
   const app = express();
 
   app.use(
+    '/graphql',
     cors({
-      origin: ['http://localhost:9000/graphql'],
-      credentials: true,
+      origin: ['http://localhost:9000'],
+      credentials: false,
       methods: 'GET HEAD PUT PATCH POST DELETE FETCH',
     })
   );
-
-  app.use((req, res, next) => {
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept'
-    );
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
-    res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Origin');
-    res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
-    next();
-  });
 
   app.use(
     session({
@@ -67,7 +57,7 @@ const main = async () => {
       },
       saveUninitialized: true,
       secret: secret,
-      resave: false,
+      resave: true,
     })
   );
 
