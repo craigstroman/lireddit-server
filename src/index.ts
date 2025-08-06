@@ -39,7 +39,6 @@ const main = async () => {
     cors({
       origin: ['http://localhost:8080'],
       credentials: true,
-      methods: ['GET', 'POST', 'OPTIONS'],
     })
   );
 
