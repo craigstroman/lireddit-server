@@ -1,10 +1,10 @@
-import path from 'path';
 import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import express from 'express';
 import { createClient } from 'redis';
+import path from 'path';
+import express from 'express';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import dotenv from 'dotenv';
@@ -21,6 +21,8 @@ declare module 'express-session' {
   }
 }
 
+// TODO: Start using Yarn in reddit client instead of npm
+
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const RedisStore = connectRedis(session);
@@ -35,9 +37,9 @@ const main = async () => {
 
   app.use(
     cors({
-      origin: ['http://localhost:9000'],
+      origin: ['http://localhost:8080'],
       credentials: true,
-      methods: 'GET HEAD PUT PATCH POST DELETE FETCH',
+      methods: ['GET', 'POST', 'OPTIONS'],
     })
   );
 
