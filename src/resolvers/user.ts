@@ -13,13 +13,21 @@ import { MyContext } from 'src/types';
 import { User } from '../entities/USER';
 
 @InputType()
-class UsernamePasswordInput {
+class UsernameRegisterInput {
   @Field()
   first_name: string;
   @Field()
   last_name: string;
   @Field()
   email: string;
+  @Field()
+  username: string;
+  @Field()
+  password: string;
+}
+
+@InputType()
+class UsernameLoginInput {
   @Field()
   username: string;
   @Field()
@@ -58,7 +66,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg('options') options: UsernameRegisterInput,
     @Ctx() { req, em }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
@@ -116,7 +124,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg('options') options: UsernameLoginInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, {
