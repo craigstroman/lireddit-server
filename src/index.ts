@@ -44,14 +44,14 @@ const main = async () => {
 
   app.use(
     session({
-      name: 'qid',
+      name: 'uid',
       store: new RedisStore({
         client: redisClient,
         disableTouch: true,
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
-        httpOnly: true,
+        httpOnly: false,
         sameSite: 'lax',
         secure: __prod__,
       },
