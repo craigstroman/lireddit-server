@@ -21,8 +21,6 @@ declare module 'express-session' {
   }
 }
 
-// TODO: Start using Yarn in reddit client instead of npm
-
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const RedisStore = connectRedis(session);
@@ -39,6 +37,8 @@ const main = async () => {
     cors({
       origin: ['http://localhost:8080'],
       credentials: true,
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
 
@@ -57,7 +57,7 @@ const main = async () => {
       },
       saveUninitialized: false,
       secret: secret,
-      resave: true,
+      resave: false,
     })
   );
 
