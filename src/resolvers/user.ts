@@ -157,10 +157,25 @@ export class UserResolver {
     }
 
     // Store user id session
-    req.session.userId = user.id;
+    req.session.userId = user?.id;
 
     return {
       user,
     };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) =>
+      req.session.destroy((err: any) => {
+        res.clearCookie('uid');
+        if (err) {
+          console.log('There was an issue destroying the session.');
+          console.log('err: ', err);
+          resolve(false);
+        }
+        resolve(true);
+      })
+    );
   }
 }
