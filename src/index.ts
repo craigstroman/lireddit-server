@@ -5,42 +5,27 @@ import { buildSchema } from 'type-graphql';
 import { createClient } from 'redis';
 import path from 'path';
 import express from 'express';
-import session from 'express-session';
-import connectRedis from 'connect-redis';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import session from 'express-session';
 import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import microConfig from './mikro-orm-config';
 
-declare module 'express-session' {
-  interface SessionData {
-    userId: number;
-  }
-}
-
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const RedisStore = connectRedis(session);
-const redisClient = createClient();
-const secret: string = process.env.SECRET || '';
-
 const main = async () => {
+  console.log('request: ', Request);
+  const RedisStore = require('connect-redis')(session);
+  const redisClient = createClient();
+  const secret: string = process.env.SECRET || '';
   const orm = await MikroORM.init(microConfig);
+
   await orm.getMigrator().up();
 
   const app = express();
-
-  app.use(
-    cors({
-      origin: ['http://localhost:8080'],
-      credentials: true,
-      methods: ['GET', 'POST', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-  );
 
   app.use(
     session({
@@ -55,9 +40,20 @@ const main = async () => {
         sameSite: 'lax',
         secure: __prod__,
       },
-      saveUninitialized: false,
+      saveUninitialized: true,
       secret: secret,
-      resave: false,
+      resave: true,
+    })
+  );
+
+  app.set('trust proxy', 1);
+
+  app.use(
+    cors({
+      origin: ['http://localhost:8080'],
+      credentials: true,
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
 
@@ -68,8 +64,8 @@ const main = async () => {
     }),
     context: async ({ req, res }) => ({
       em: orm.em,
-      req,
-      res,
+      req: req,
+      res: res,
     }),
   });
 
