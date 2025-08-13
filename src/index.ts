@@ -17,7 +17,6 @@ import microConfig from './mikro-orm-config';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const main = async () => {
-  console.log('request: ', Request);
   const RedisStore = require('connect-redis')(session);
   const redisClient = createClient();
   const secret: string = process.env.SECRET || '';
@@ -40,9 +39,9 @@ const main = async () => {
         sameSite: 'lax',
         secure: __prod__,
       },
-      saveUninitialized: true,
+      saveUninitialized: false,
       secret: secret,
-      resave: true,
+      resave: false,
     })
   );
 
