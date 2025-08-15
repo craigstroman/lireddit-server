@@ -25,7 +25,7 @@ export class User {
   last_name!: string;
 
   @Field(() => String)
-  @Property({ type: 'text' })
+  @Property({ type: 'text', unique: true })
   email!: string;
 
   @Field()
