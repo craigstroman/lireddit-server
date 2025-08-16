@@ -46,6 +46,7 @@
     "minimatch": "^10.0.3",
     "nodemailer": "6.4.11",
     "pg": "^8.16.3",
+    "pug": "^3.0.3",
     "reflect-metadata": "0.1.13",
     "type-graphql": "1.0.0-rc.3",
     "uuid": "^11.1.0"
