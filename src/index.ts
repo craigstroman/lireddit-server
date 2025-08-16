@@ -8,10 +8,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
+import Redis from 'ioredis';
 import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
+import { sendEmail } from './utils/sendEmail';
 import microConfig from './mikro-orm-config';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -19,12 +21,15 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const main = async () => {
   const RedisStore = require('connect-redis')(session);
   const redisClient = createClient();
+  const redis = new Redis();
   const secret: string = process.env.SECRET || '';
   const orm = await MikroORM.init(microConfig);
 
   await orm.getMigrator().up();
 
   const app = express();
+
+  sendEmail('bob@bob.com', 'Hello there: ');
 
   app.use(
     session({
@@ -65,6 +70,7 @@ const main = async () => {
       em: orm.em,
       req: req,
       res: res,
+      redis: redis,
     }),
   });
 
