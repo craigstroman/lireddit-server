@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { createClient } from 'redis';
 import path from 'path';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -15,12 +14,12 @@ import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { sendEmail } from './utils/sendEmail';
 import microConfig from './mikro-orm-config';
+import routes from './routes/index';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const main = async () => {
   const RedisStore = require('connect-redis')(session);
-  const redisClient = createClient();
   const redis = new Redis();
   const secret: string = process.env.SECRET || '';
   const orm = await MikroORM.init(microConfig);
@@ -29,13 +28,11 @@ const main = async () => {
 
   const app = express();
 
-  sendEmail('bob@bob.com', 'Hello there: ');
-
   app.use(
     session({
       name: 'uid',
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTouch: true,
       }),
       cookie: {
@@ -73,6 +70,11 @@ const main = async () => {
       redis: redis,
     }),
   });
+
+  app.use(routes);
+
+  app.set('views', path.join(__dirname, './views'));
+  app.set('view engine', 'pug');
 
   await apolloServer.start();
 
