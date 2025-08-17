@@ -12,13 +12,20 @@ import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-import { sendEmail } from './utils/sendEmail';
+// import { sendEmail } from './utils/sendEmail';
 import microConfig from './mikro-orm-config';
 import routes from './routes/index';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const main = async () => {
+  const nodeEnv = process.env.NODE_ENV;
+  const locals = {
+    javascript:
+      nodeEnv === 'development'
+        ? '/static/js/bundle.js'
+        : '/static/js/main.min.js',
+  };
   const RedisStore = require('connect-redis')(session);
   const redis = new Redis();
   const secret: string = process.env.SECRET || '';
@@ -75,6 +82,8 @@ const main = async () => {
 
   app.set('views', path.join(__dirname, './views'));
   app.set('view engine', 'pug');
+
+  app.locals = locals;
 
   await apolloServer.start();
 
