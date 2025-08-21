@@ -75,10 +75,10 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async changePassword(
     @Arg('token') token: string,
-    @Arg('newPassword') newPassword: string,
+    @Arg('new_password') new_password: string,
     @Ctx() { redis, em, req }: MyContext
   ): Promise<UserResponse> {
-    if (newPassword.length <= 2) {
+    if (new_password.length <= 2) {
       return {
         errors: [
           {
