@@ -115,7 +115,7 @@ export class UserResolver {
       };
     }
 
-    user.password = await argon2.hash(newPassword);
+    user.password = await argon2.hash(new_password);
     await em.persistAndFlush(user);
 
     await redis.del(key);
