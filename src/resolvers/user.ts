@@ -137,7 +137,7 @@ export class UserResolver {
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
 
-    return `<a href="http://localhost:8080/change-password/${token}">Reset Password</a>`;
+    return `http://localhost:8080/change-password/${token}`;
   }
 
   @Mutation(() => UserResponse)
