@@ -12,7 +12,6 @@ import { v4 } from 'uuid';
 import argon2 from 'argon2';
 import { MyContext } from 'src/types';
 import { User } from '../entities/USER';
-import { sendEmail } from '../utils/sendEmail';
 import { FORGET_PASSWORD_PREFIX } from '../constants';
 
 // TODO: Also add email validation to server side
@@ -25,14 +24,6 @@ class UsernameRegisterInput {
   last_name: string;
   @Field()
   email: string;
-  @Field()
-  username: string;
-  @Field()
-  password: string;
-}
-
-@InputType()
-class UsernameLoginInput {
   @Field()
   username: string;
   @Field()
@@ -126,15 +117,15 @@ export class UserResolver {
     return { user };
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => String)
   async forgotPassword(
     @Arg('email') email: string,
-    @Ctx() { req, em, redis }: MyContext
+    @Ctx() { em, redis }: MyContext
   ) {
     const user = await em.findOne(User, { email });
 
     if (!user) {
-      return true;
+      return 'Error';
     }
 
     const token = v4();
@@ -146,12 +137,7 @@ export class UserResolver {
       1000 * 60 * 60 * 24 * 3
     ); // 3 days
 
-    await sendEmail(
-      email,
-      `<a href="http://localhost:8080/change-password/${token}">reset password</a>`
-    );
-
-    return true;
+    return `<a href="http://localhost:8080/change-password/${token}">Reset Password</a>`;
   }
 
   @Mutation(() => UserResponse)
