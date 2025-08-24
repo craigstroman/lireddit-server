@@ -13,6 +13,7 @@ import argon2 from 'argon2';
 import { MyContext } from 'src/types';
 import { User } from '../entities/USER';
 import { FORGET_PASSWORD_PREFIX } from '../constants';
+import { getConnection } from 'typeorm';
 
 // TODO: Also add email validation to server side
 
@@ -50,7 +51,7 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User)
-  async me(@Ctx() { req, em }: MyContext) {
+  async me(@Ctx() { req }: MyContext) {
     // You are not logged in
     if (!req.session.userId) {
       return null;
@@ -58,7 +59,7 @@ export class UserResolver {
 
     const id = req.session.userId;
 
-    const user = await em.findOne(User, { id });
+    const user = await User.findOne(id);
 
     return user;
   }
@@ -93,7 +94,8 @@ export class UserResolver {
       };
     }
 
-    const user = await em.findOne(User, { id: parseInt(userId) });
+    const userIdNum = parseInt(userId);
+    const user = await User.findOne(userIdNum);
 
     if (!user) {
       return {
@@ -107,7 +109,12 @@ export class UserResolver {
     }
 
     user.password = await argon2.hash(new_password);
-    await em.persistAndFlush(user);
+    await User.update(
+      { id: userIdNum },
+      {
+        password: await argon2.hash(new_password),
+      }
+    );
 
     await redis.del(key);
 
@@ -122,7 +129,7 @@ export class UserResolver {
     @Arg('email') email: string,
     @Ctx() { em, redis }: MyContext
   ) {
-    const user = await em.findOne(User, { email });
+    const user = await User.findOne(email);
 
     if (!user) {
       return 'Error';
@@ -168,15 +175,21 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(options.password);
-    const user = em.create(User, {
-      first_name: options.first_name,
-      last_name: options.last_name,
-      email: options.email,
-      username: options.username,
-      password: hashedPassword,
-      createdAt: new Date().toDateString(),
-      updatedAt: new Date().toDateString(),
-    });
+    const result = await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(User)
+      .values({
+        first_name: options.first_name,
+        last_name: options.last_name,
+        username: options.username,
+        email: options.email,
+        password: hashedPassword,
+      })
+      .returning('*')
+      .execute();
+
+    const user = result.raw[0];
 
     try {
       await em.persistAndFlush(user);
@@ -202,13 +215,12 @@ export class UserResolver {
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(
-      User,
+    const user = await User.findOne(
       usernameOrEmail.includes('@')
-        ? { email: usernameOrEmail }
-        : { username: usernameOrEmail }
+        ? { where: { email: usernameOrEmail } }
+        : { where: { username: usernameOrEmail } }
     );
 
     if (!user) {
@@ -216,7 +228,7 @@ export class UserResolver {
         errors: [
           {
             field: 'username',
-            message: "Username doesn't exist",
+            message: 'Username or password is invalid.',
           },
         ],
       };
@@ -229,7 +241,7 @@ export class UserResolver {
         errors: [
           {
             field: 'password',
-            message: "Password doesn't match",
+            message: "Username or password doesn't match.",
           },
         ],
       };
