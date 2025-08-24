@@ -12,7 +12,6 @@ import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-// import { sendEmail } from './utils/sendEmail';
 import microConfig from './mikro-orm-config';
 import routes from './routes/index';
 
