@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
+import { createConnection } from 'typeorm';
 import path from 'path';
 import express from 'express';
 import dotenv from 'dotenv';
@@ -12,12 +13,22 @@ import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
-import microConfig from './mikro-orm-config';
+import { User } from './entities/USER';
+import { Post } from './entities/POST';
 import routes from './routes/index';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const main = async () => {
+  await createConnection({
+    type: 'postgres',
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    logging: true,
+    synchronize: true,
+    entities: [Post, User],
+  });
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
     javascript:
@@ -28,9 +39,6 @@ const main = async () => {
   const RedisStore = require('connect-redis')(session);
   const redis = new Redis();
   const secret: string = process.env.SECRET || '';
-  const orm = await MikroORM.init(microConfig);
-
-  await orm.getMigrator().up();
 
   const app = express();
 
@@ -70,7 +78,6 @@ const main = async () => {
       validate: false,
     }),
     context: async ({ req, res }) => ({
-      em: orm.em,
       req: req,
       res: res,
       redis: redis,
