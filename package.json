@@ -4,8 +4,8 @@
   "main": "dist/index.js",
   "scripts": {
     "watch": "tsc -w & copyfiles -f ./src/views/*.pug ./dist/views",
-    "live:server": "NODE_ENV=development dist/index.js",
-    "start": "node ./dist/index.js",
+    "live:server": "NODE_ENV=development nodemon dist/index.js",
+    "start": "NODE_ENV=production node ./dist/index.js",
     "create:migration": "tsc ./migration-create"
   },
   "keywords": [],
