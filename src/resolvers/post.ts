@@ -46,6 +46,7 @@ export class PostResolver {
   }
 
   @Mutation(() => Post, { nullable: true })
+  @UseMiddleware(isAuth)
   async updatePost(
     @Arg('id') id: number,
     @Arg('title') title: string
@@ -66,6 +67,7 @@ export class PostResolver {
   }
 
   @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async deletePostById(@Arg('id') id: number): Promise<boolean> {
     try {
       await Post.delete(id);
