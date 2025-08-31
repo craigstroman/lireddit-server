@@ -27,7 +27,7 @@ export class PostResolver {
   @Query(() => [Post])
   async posts(
     @Arg('limit') limit: number,
-    @Arg('cursor') cursor: string
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
   ): Promise<Post[]> {
     const realLimit = Math.min(50, limit);
     const qb = getConnection()
