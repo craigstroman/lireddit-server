@@ -8,6 +8,8 @@ import {
   Field,
   Ctx,
   UseMiddleware,
+  FieldResolver,
+  Root,
 } from 'type-graphql';
 import { getConnection } from 'typeorm';
 import { Post } from '../entities/POST';
@@ -24,6 +26,11 @@ class PostInput {
 
 @Resolver()
 export class PostResolver {
+  @FieldResolver(() => String)
+  textSnippet(@Root() post: Post) {
+    return post.text.slice(0, 50);
+  }
+
   @Query(() => [Post])
   async posts(
     @Arg('limit', () => Int) limit: number,
