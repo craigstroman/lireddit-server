@@ -24,7 +24,7 @@ class PostInput {
   text: string;
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
   @FieldResolver(() => String)
   textSnippet(@Root() post: Post) {
