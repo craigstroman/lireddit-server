@@ -20,19 +20,6 @@ import routes from './routes/index';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const main = async () => {
-  const conn = await createConnection({
-    type: 'postgres',
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    logging: true,
-    synchronize: true,
-    migrations: [path.join(__dirname, './migrations/*')],
-    entities: [Post, User],
-  });
-
-  await conn.runMigrations();
-
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
     javascript:
@@ -66,6 +53,19 @@ const main = async () => {
   );
 
   app.set('trust proxy', 1);
+
+  const conn = await createConnection({
+    type: 'postgres',
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    logging: true,
+    synchronize: true,
+    migrations: [path.join(__dirname, './migrations/*')],
+    entities: [Post, User],
+  });
+
+  await conn.runMigrations();
 
   app.use(
     cors({
