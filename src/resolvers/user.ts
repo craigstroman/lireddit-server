@@ -6,6 +6,8 @@ import {
   Field,
   Ctx,
   ObjectType,
+  FieldResolver,
+  Root,
   Query,
 } from 'type-graphql';
 import { v4 } from 'uuid';
@@ -48,8 +50,17 @@ class UserResponse {
   user?: User;
 }
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => String)
+  email(@Root() user: User, @Ctx() { req }: MyContext) {
+    // this is the current user and its ok to show them their own email
+    if (req.session.userId === user.id) {
+      return user.email;
+    }
+    // current user wants to see someone elses email
+    return '';
+  }
   @Query(() => User)
   async me(@Ctx() { req }: MyContext) {
     // You are not logged in
