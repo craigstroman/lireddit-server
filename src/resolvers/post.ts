@@ -40,6 +40,8 @@ export class PostResolver {
     return post.text.slice(0, 50);
   }
 
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async vote(
     @Arg('postId', () => Int) postId: number,
     @Arg('value', () => Int) value: number,
@@ -48,6 +50,11 @@ export class PostResolver {
     const isUpdoot = value !== -1;
     const realValue = isUpdoot ? 1 : -1;
     const { userId } = req.session;
+    // await Updoot.insert({
+    //   userId,
+    //   postId,
+    //   value: realValue,
+    // });
     await getConnection().query(
       `
     START TRANSACTION;
