@@ -15,6 +15,7 @@ import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { User } from './entities/USER';
 import { Post } from './entities/POST';
+import { Updoot } from './entities/Updoot';
 import routes from './routes/index';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -62,7 +63,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [Post, User],
+    entities: [Post, User, Updoot],
   });
 
   await conn.runMigrations();
