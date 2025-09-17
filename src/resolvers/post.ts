@@ -14,6 +14,8 @@ import {
 } from 'type-graphql';
 import { getConnection } from 'typeorm';
 import { Post } from '../entities/POST';
+import { Updoot } from 'src/entities/Updoot';
+import { User } from 'src/entities/USER';
 import { MyContext } from '../types';
 import { isAuth } from '../middleware/isAuth';
 
@@ -40,6 +42,23 @@ export class PostResolver {
     return post.text.slice(0, 50);
   }
 
+  @FieldResolver(() => Int, { nullable: true })
+  async voteStatus(
+    @Root() post: Post,
+    @Ctx() { updootLoader, req }: MyContext
+  ) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const updoot = await updootLoader.load({
+      postId: post.id,
+      userId: req.session.userId,
+    });
+
+    return updoot ? updoot.value : null;
+  }
+
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async vote(
@@ -50,11 +69,7 @@ export class PostResolver {
     const isUpdoot = value !== -1;
     const realValue = isUpdoot ? 1 : -1;
     const { userId } = req.session;
-    // await Updoot.insert({
-    //   userId,
-    //   postId,
-    //   value: realValue,
-    // });
+
     await getConnection().query(
       `
     START TRANSACTION;
@@ -147,14 +162,11 @@ export class PostResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async deletePostById(@Arg('id') id: number): Promise<boolean> {
-    try {
-      await Post.delete(id);
-
-      return true;
-    } catch (error) {
-      console.log('error: ', error);
-      return false;
-    }
+  async deletePost(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    await Post.delete({ id, creatorId: req.session.userId });
+    return true;
   }
 }
