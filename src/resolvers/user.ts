@@ -275,6 +275,7 @@ export class UserResolver {
           console.log('There was an issue destroying the session.');
           console.log('err: ', err);
           resolve(false);
+          return;
         }
         resolve(true);
       })
