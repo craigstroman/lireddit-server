@@ -6,7 +6,7 @@ Based on https://www.youtube.com/watch?v=I6ypD7qv3Z8&t=13455s, but using React a
 
 - git clone https://github.com/craigstroman/lireddit-server.git
 - cd lireddit-server
-- Run npm install
+- Run `npm install`
 - Create database in PostgreSQL and set database password, add database user, set password in .env file
-- Run npm run live:server to start development environment
+- Run `npm run live:server` to start development environment
 - Then go to http://localhost:9000/graphql
