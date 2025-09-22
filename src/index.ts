@@ -19,6 +19,8 @@ import routes from './routes/index';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
+const port = process.env.PORT;
+
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
@@ -102,8 +104,8 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(9000, () => {
-    console.log('Server started on localhost:9000');
+  app.listen(port, () => {
+    console.log(`Server started on localhost:${port}`);
   });
 };
 
