@@ -21,6 +21,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const port = process.env.PORT;
 
+// TODO: Figure out why this wont work on DigitalOcean
+
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
