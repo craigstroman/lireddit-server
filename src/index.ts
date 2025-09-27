@@ -20,8 +20,10 @@ import routes from './routes/index';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const port = process.env.PORT;
+const nodeEnv = process.env.NODE_ENV;
 
-// TODO: Figure out why this wont work on DigitalOcean
+const javascript =
+  nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js';
 
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
@@ -69,7 +71,7 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  await conn.runMigrations();
+  // await conn.runMigrations();
 
   app.use(
     cors({
@@ -98,6 +100,11 @@ const main = async () => {
   app.set('view engine', 'pug');
 
   app.locals = locals;
+
+  app.locals.javascript = javascript;
+
+  app.locals.title = 'LiReddit';
+  app.locals.description = 'A Reddit clone.';
 
   await apolloServer.start();
 
