@@ -9,6 +9,10 @@ if (process.env.NODE_ENV === 'development') {
 
 router.route('/').get(indexPage);
 
+router.route('/register').get(indexPage);
+
+router.route('/login').get(indexPage);
+
 router.route('/change-password/').get(indexPage);
 
 router.route('/change-password/:token').get(indexPage);
