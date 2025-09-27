@@ -96,6 +96,8 @@ const main = async () => {
 
   app.use(routes);
 
+  app.use('/static', express.static('public'));
+
   app.set('views', path.join(__dirname, './views'));
   app.set('view engine', 'pug');
 
