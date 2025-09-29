@@ -25,6 +25,8 @@ const nodeEnv = process.env.NODE_ENV;
 const javascript =
   nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js';
 
+// TODO: Get cookie working in production environment
+
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
