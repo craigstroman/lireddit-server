@@ -8,7 +8,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
 import Redis from 'ioredis';
-import { __prod__ } from './constants';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
@@ -41,6 +40,8 @@ const main = async () => {
 
   const app = express();
 
+  app.set('trust proxy', 1);
+
   app.use(
     session({
       name: 'uid',
@@ -50,9 +51,13 @@ const main = async () => {
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
-        httpOnly: false,
+        httpOnly: true,
         sameSite: 'lax',
-        secure: __prod__,
+        domain:
+          nodeEnv === 'production'
+            ? 'craigstroman.com'
+            : 'http://localhost:9000',
+        secure: nodeEnv === 'production' ? true : false,
       },
       saveUninitialized: false,
       secret: secret,
@@ -60,9 +65,7 @@ const main = async () => {
     })
   );
 
-  app.set('trust proxy', 1);
-
-  const conn = await createConnection({
+  await createConnection({
     type: 'postgres',
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
@@ -98,6 +101,8 @@ const main = async () => {
       redis: redis,
     }),
   });
+
+  app.set('trust proxy', 1);
 
   app.use(routes);
 
