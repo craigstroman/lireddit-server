@@ -80,7 +80,7 @@ const main = async () => {
     cors({
       origin:
         nodeEnv === 'production'
-          ? ['http://lireddit.craigstroman.com']
+          ? ['https://lireddit.craigstroman.com']
           : ['http://localhost:8080'],
       credentials: true,
       methods: ['GET', 'POST', 'OPTIONS'],
