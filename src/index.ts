@@ -24,8 +24,6 @@ const nodeEnv = process.env.NODE_ENV;
 const javascript =
   nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js';
 
-// TODO: Get cookie working in production environment
-
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
@@ -53,11 +51,11 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
         sameSite: 'lax',
-        domain:
+        /*domain:
           nodeEnv === 'production'
             ? 'craigstroman.com'
-            : 'http://localhost:9000',
-        secure: nodeEnv === 'production' ? true : false,
+            : 'http://localhost:8080',*/
+        // secure: nodeEnv === 'production' ? true : false,
       },
       saveUninitialized: false,
       secret: secret,
