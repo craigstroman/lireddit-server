@@ -17,4 +17,6 @@ router.route('/change-password/').get(indexPage);
 
 router.route('/change-password/:token').get(indexPage);
 
+router.route('/create-post').get(indexPage);
+
 export default router;
