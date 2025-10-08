@@ -51,11 +51,7 @@ const main = async () => {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
         sameSite: 'lax',
-        /*domain:
-          nodeEnv === 'production'
-            ? 'craigstroman.com'
-            : 'http://localhost:8080',*/
-        // secure: nodeEnv === 'production' ? true : false,
+        secure: nodeEnv === 'production' ? true : false,
       },
       saveUninitialized: false,
       secret: secret,
