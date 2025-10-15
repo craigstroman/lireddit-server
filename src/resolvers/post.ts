@@ -95,6 +95,7 @@ export class PostResolver {
     const realLimit = Math.min(50, limit);
     const realLimitPlusOne = realLimit + 1;
     const replacements: any[] = [realLimitPlusOne];
+
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
     }
