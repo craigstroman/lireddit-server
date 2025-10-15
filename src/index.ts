@@ -59,7 +59,7 @@ const main = async () => {
     })
   );
 
-  await createConnection({
+  const conn = await createConnection({
     type: 'postgres',
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
@@ -70,7 +70,7 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  // await conn.runMigrations();
+  await conn.runMigrations();
 
   app.use(
     cors({
