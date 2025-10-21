@@ -75,7 +75,7 @@ export class PostResolver {
     START TRANSACTION;
 
     insert into updoot ("userId", "postId", value)
-    values (${userId},${postId},${realValue});
+    values (${userId},${postId},${realValue}) on conflict ("postId", "userId") do nothing;
 
     update post
     set points = points + ${realValue}
@@ -84,6 +84,7 @@ export class PostResolver {
     COMMIT;
     `
     );
+
     return true;
   }
 
