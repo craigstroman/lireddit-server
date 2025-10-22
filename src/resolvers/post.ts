@@ -70,12 +70,21 @@ export class PostResolver {
     const realValue = isUpdoot ? 1 : -1;
     const { userId } = req.session;
 
+    const points = await getConnection().query(
+      `select points from post where id = ${postId}`
+    );
+
     await getConnection().query(
       `
     START TRANSACTION;
 
     insert into updoot ("userId", "postId", value)
     values (${userId},${postId},${realValue}) on conflict ("postId", "userId") do nothing;
+
+    update updoot
+    set value = ${points[0].points} + ${realValue}
+    where "postId" = ${postId} 
+     AND EXISTS (SELECT 1 FROM updoot WHERE "postId" = ${postId});
 
     update post
     set points = points + ${realValue}
