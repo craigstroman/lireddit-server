@@ -19,6 +19,9 @@ export class post1758653732832 implements MigrationInterface {
                         ON UPDATE NO ACTION
                         ON DELETE NO ACTION
                 )
+
+                ALTER TABLE public.post 
+                ADD COLUMN "voteStatus" integer NOT NULL DEFAULT 0,
             `
     );
   }
