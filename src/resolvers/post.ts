@@ -34,6 +34,7 @@ class PaginatedPosts {
   hasMore: boolean;
 }
 
+@ObjectType()
 @Resolver(Post)
 export class PostResolver {
   @FieldResolver(() => String)
@@ -140,22 +141,6 @@ export class PostResolver {
       replacements
     );
 
-    // const qb = getConnection()
-    //   .getRepository(Post)
-    //   .createQueryBuilder("p")
-    //   .innerJoinAndSelect("p.creator", "u", 'u.id = p."creatorId"')
-    //   .orderBy('p."createdAt"', "DESC")
-    //   .take(reaLimitPlusOne);
-
-    // if (cursor) {
-    //   qb.where('p."createdAt" < :cursor', {
-    //     cursor: new Date(parseInt(cursor)),
-    //   });
-    // }
-
-    // const posts = await qb.getMany();
-    // console.log("posts: ", posts);
-
     return {
       posts: posts.slice(0, realLimit),
       hasMore: posts.length === reaLimitPlusOne,
@@ -185,8 +170,8 @@ export class PostResolver {
   @UseMiddleware(isAuth)
   async updatePost(
     @Arg('id') id: number,
-    @Arg('title', () => String, {nullable: true}) title: string,
-    @Arg('text', () => String, {nullable: true}) text: string
+    @Arg('title', () => String, { nullable: true }) title: string,
+    @Arg('text', () => String, { nullable: true }) text: string,
     @Ctx() { req }: MyContext
   ): Promise<Post | null> {
     const result = await getConnection()
@@ -197,7 +182,7 @@ export class PostResolver {
         id,
         creatorId: req.session.userId,
       })
-      .returning("*")
+      .returning('*')
       .execute();
 
     return result.raw[0];
