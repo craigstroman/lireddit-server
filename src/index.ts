@@ -70,7 +70,9 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  await conn.runMigrations();
+  if (nodeEnv === 'development') {
+    await conn.runMigrations();
+  }
 
   app.use(
     cors({
