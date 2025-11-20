@@ -11,6 +11,8 @@ router.route('/').get(indexPage);
 
 router.route('/register').get(indexPage);
 
+router.route('/dashboard').get(indexPage);
+
 router.route('/login').get(indexPage);
 
 router.route('/change-password/').get(indexPage);
