@@ -49,11 +49,11 @@ const main = async () => {
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
-        httpOnly: true,
+        httpOnly: false,
         sameSite: 'lax',
-        secure: nodeEnv === 'production' ? true : false,
+        secure: false,
       },
-      saveUninitialized: false,
+      saveUninitialized: true,
       secret: secret,
       resave: false,
     })
