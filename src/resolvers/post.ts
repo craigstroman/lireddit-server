@@ -111,14 +111,19 @@ export class PostResolver {
     const realLimit = Math.min(50, limit);
     const reaLimitPlusOne = realLimit + 1;
 
-    const replacements: any[] = [reaLimitPlusOne, req.session.userId];
+    const replacements: any[] = [reaLimitPlusOne];
+
+    if (req.session.userId) {
+      replacements.push(req.session.userId);
+    }
 
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
     }
 
-    const posts = await getConnection().query(
-      `
+    try {
+      const posts = await getConnection().query(
+        `
     select p.*,
     json_build_object(
       'id', u.id,
@@ -138,13 +143,17 @@ export class PostResolver {
     order by p."createdAt" DESC
     limit $1
     `,
-      replacements
-    );
+        replacements
+      );
 
-    return {
-      posts: posts.slice(0, realLimit),
-      hasMore: posts.length === reaLimitPlusOne,
-    };
+      return {
+        posts: posts.slice(0, realLimit),
+        hasMore: posts.length === reaLimitPlusOne,
+      };
+    } catch (error) {
+      console.log('error: ', error);
+      return error;
+    }
   }
 
   @Query(() => Post, { nullable: true })
