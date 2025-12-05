@@ -15,6 +15,7 @@ import { User } from './entities/USER';
 import { Post } from './entities/POST';
 import { Updoot } from './entities/Updoot';
 import routes from './routes/index';
+import { createUserLoader } from './utils/createUserLoader';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -95,6 +96,7 @@ const main = async () => {
       req: req,
       res: res,
       redis: redis,
+      userLoader: createUserLoader(),
     }),
   });
 
