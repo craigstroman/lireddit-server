@@ -147,8 +147,6 @@ export class PostResolver {
         replacements
       );
 
-      console.log('posts: ', posts.slice(0, realLimit));
-
       return {
         posts: posts.slice(0, realLimit),
         hasMore: posts.length === reaLimitPlusOne,
