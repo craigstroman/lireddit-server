@@ -1,21 +1,9 @@
 import { ObjectType, Field } from 'type-graphql';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BaseEntity,
-  OneToMany,
-} from 'typeorm';
+import { Entity, Column, UpdateDateColumn, BaseEntity } from 'typeorm';
 
 @ObjectType()
 @Entity()
 export class UserPresence extends BaseEntity {
-  @Field()
-  @PrimaryGeneratedColumn()
-  id!: number;
-
   @Field()
   @Column()
   user_id: number;
