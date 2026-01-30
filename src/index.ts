@@ -23,16 +23,12 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const port = process.env.PORT;
 const nodeEnv = process.env.NODE_ENV;
 
-const javascript =
-  nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js';
+const javascript = nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js';
 
 const main = async () => {
   const nodeEnv = process.env.NODE_ENV;
   const locals = {
-    javascript:
-      nodeEnv === 'development'
-        ? '/static/js/bundle.js'
-        : '/static/js/main.min.js',
+    javascript: nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js',
   };
   const RedisStore = require('connect-redis')(session);
   const redis = new Redis();
@@ -58,7 +54,7 @@ const main = async () => {
       saveUninitialized: true,
       secret: secret,
       resave: false,
-    })
+    }),
   );
 
   const conn = await createConnection({
@@ -72,20 +68,17 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  if (nodeEnv === 'development') {
-    await conn.runMigrations();
-  }
+  //if (nodeEnv === 'development') {
+  await conn.runMigrations();
+  //}
 
   app.use(
     cors({
-      origin:
-        nodeEnv === 'production'
-          ? ['https://lireddit.craigstroman.com']
-          : ['http://localhost:8080'],
+      origin: nodeEnv === 'production' ? ['https://lireddit.craigstroman.com'] : ['http://localhost:8080'],
       credentials: true,
       methods: ['GET', 'POST', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-    })
+    }),
   );
 
   const apolloServer = new ApolloServer({
