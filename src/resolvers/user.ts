@@ -16,8 +16,14 @@ import { MyContext } from 'src/types';
 import { User } from '../entities/USER';
 import { FORGET_PASSWORD_PREFIX } from '../constants';
 import { getConnection } from 'typeorm';
+import dotenv from 'dotenv';
+import path from 'path';
 
 // TODO: Also add email validation to server side
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const frontEndPort: number | string = process.env.FRONT_END_PORT ? process.env.FRONT_END_PORT : 0;
 
 @InputType()
 class UsernameRegisterInput {
@@ -79,7 +85,7 @@ export class UserResolver {
   async changePassword(
     @Arg('token') token: string,
     @Arg('new_password') new_password: string,
-    @Ctx() { redis, em, req }: MyContext
+    @Ctx() { redis, em, req }: MyContext,
   ): Promise<UserResponse> {
     if (new_password.length <= 2) {
       return {
@@ -124,7 +130,7 @@ export class UserResolver {
       { id: userIdNum },
       {
         password: await argon2.hash(new_password),
-      }
+      },
     );
 
     await redis.del(key);
@@ -136,10 +142,7 @@ export class UserResolver {
   }
 
   @Mutation(() => String)
-  async forgotPassword(
-    @Arg('email') email: string,
-    @Ctx() { redis }: MyContext
-  ) {
+  async forgotPassword(@Arg('email') email: string, @Ctx() { redis }: MyContext) {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
@@ -148,20 +151,23 @@ export class UserResolver {
 
     const token = v4();
 
-    await redis.set(
-      FORGET_PASSWORD_PREFIX + token,
-      user.id,
-      'ex',
-      1000 * 60 * 60 * 24 * 3
-    ); // 3 days
+    await redis.set(FORGET_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 60 * 24 * 3); // 3 days
 
-    return `http://localhost:8080/change-password/${token}`;
+    let url: string = '';
+
+    if (process.env.NODE_ENV === 'development') {
+      url = `http://localhost:${frontEndPort}/change-password/${token}`;
+    } else {
+      url = `https://slack-clone.craigstroman.com/change-password/${token}`;
+    }
+
+    return url;
   }
 
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernameRegisterInput,
-    @Ctx() { req, em }: MyContext
+    @Ctx() { req, em }: MyContext,
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
@@ -226,12 +232,12 @@ export class UserResolver {
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
-    @Ctx() { req }: MyContext
+    @Ctx() { req }: MyContext,
   ): Promise<UserResponse> {
     const user = await User.findOne(
       usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }
-        : { where: { username: usernameOrEmail } }
+        : { where: { username: usernameOrEmail } },
     );
 
     if (!user) {
@@ -278,7 +284,7 @@ export class UserResolver {
           return;
         }
         resolve(true);
-      })
+      }),
     );
   }
 }
