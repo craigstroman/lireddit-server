@@ -158,7 +158,7 @@ export class UserResolver {
     if (process.env.NODE_ENV === 'development') {
       url = `http://localhost:${frontEndPort}/change-password/${token}`;
     } else {
-      url = `https://slack-clone.craigstroman.com/change-password/${token}`;
+      url = `https://lireddit.craigstroman.com/change-password/${token}`;
     }
 
     return url;
