@@ -23,8 +23,6 @@ import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const frontEndPort: number | string = process.env.FRONT_END_PORT ? process.env.FRONT_END_PORT : 0;
-
 @InputType()
 class UsernameRegisterInput {
   @Field()
@@ -156,7 +154,7 @@ export class UserResolver {
     let url: string = '';
 
     if (process.env.NODE_ENV === 'development') {
-      url = `http://localhost:${frontEndPort}/change-password/${token}`;
+      url = `http://localhost:8080/change-password/${token}`;
     } else {
       url = `https://lireddit.craigstroman.com/change-password/${token}`;
     }
