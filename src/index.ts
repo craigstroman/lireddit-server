@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import session from 'express-session';
 import Redis from 'ioredis';
+import connectRedis from 'connect-redis';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
@@ -30,8 +31,9 @@ const main = async () => {
   const locals = {
     javascript: nodeEnv === 'development' ? '/static/js/bundle.js' : '/static/js/main.min.js',
   };
-  const RedisStore = require('connect-redis')(session);
+
   const redis = new Redis();
+  const RedisStore = connectRedis(session);
   const secret: string = process.env.SECRET || '';
 
   const app = express();
