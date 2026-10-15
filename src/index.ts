@@ -9,7 +9,6 @@ import cors from 'cors';
 import session from 'express-session';
 import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
-import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { User } from './entities/USER';
@@ -70,9 +69,7 @@ const main = async () => {
     entities: [Post, User, Updoot],
   });
 
-  //if (nodeEnv === 'development') {
   await conn.runMigrations();
-  //}
 
   app.use(
     cors({
@@ -85,7 +82,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, PostResolver, UserResolver],
+      resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
     context: async ({ req, res }) => ({
@@ -96,8 +93,6 @@ const main = async () => {
       updootLoader: createUpdootLoader(),
     }),
   });
-
-  app.set('trust proxy', 1);
 
   app.use(routes);
 
