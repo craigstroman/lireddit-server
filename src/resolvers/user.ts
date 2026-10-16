@@ -12,7 +12,7 @@ import {
 } from 'type-graphql';
 import { v4 } from 'uuid';
 import argon2 from 'argon2';
-import { MyContext } from 'src/types';
+import { MyContext } from '../types';
 import { User } from '../entities/USER';
 import { FORGET_PASSWORD_PREFIX } from '../constants';
 import { getConnection } from 'typeorm';
